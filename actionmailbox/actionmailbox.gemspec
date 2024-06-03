@@ -38,5 +38,8 @@ Gem::Specification.new do |s|
   s.add_dependency "activejob",     version
   s.add_dependency "actionpack",    version
 
-  s.add_dependency "mail", ">= 2.8.0"
+  s.add_dependency "mail", ">= 2.7.1"
+  s.add_dependency "net-imap"
+  s.add_dependency "net-pop"
+  s.add_dependency "net-smtp"
 end
