@@ -161,6 +161,12 @@ module ActiveRecord
           MySQL::SchemaCreation.new(self)
         end
 
+        def columns(table_name) # :nodoc:
+          super
+        ensure
+          @cached_create_table_info = nil
+        end
+
         private
           CHARSETS_OF_4BYTES_MAXLEN = ["utf8mb4", "utf16", "utf16le", "utf32"]
 
@@ -195,7 +201,8 @@ module ActiveRecord
           end
 
           def default_type(table_name, field_name)
-            match = create_table_info(table_name)&.match(/`#{field_name}` (.+) DEFAULT ('|\d+|[A-z]+)/)
+            table_info = @cached_create_table_info ||= create_table_info(table_name)
+            match = table_info&.match(/`#{field_name}` (.+) DEFAULT ('|\d+|[A-z]+)/)
             default_pre = match[2] if match
 
             if default_pre == "'"
@@ -224,7 +231,7 @@ module ActiveRecord
               default = default[1...-1].gsub("\\'", "'")
             elsif default&.match?(/\A\d/)
               # Its a number so we can skip the query to check if it is a function
-            elsif default && default_type(table_name, field_name) == :function
+            elsif default && mariadb? && default_type(table_name, field_name) == :function
               default, default_function = nil, default
             end
 
