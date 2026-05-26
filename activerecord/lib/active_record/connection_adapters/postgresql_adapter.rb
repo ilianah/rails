@@ -149,7 +149,7 @@ module ActiveRecord
       #   ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.select_value("select '\\x48656c6c6f'::bytea").encoding #=> Encoding::BINARY
       class_attribute :decode_bytea, default: false
 
-      NATIVE_DATABASE_TYPES = {
+      NATIVE_DATABASE_TYPES = { # rubocop:disable Style/MutableConstant
         primary_key: "bigserial primary key",
         string:      { name: "character varying" },
         text:        { name: "text" },
@@ -255,6 +255,13 @@ module ActiveRecord
         true
       end
 
+      def supports_enforced_foreign_keys?
+        # `NOT ENFORCED` foreign keys exist from PostgreSQL 18.0, but `DEFERRABLE` was lost on
+        # them until 18.4 ("Fix loss of deferrability of foreign-key triggers",
+        # https://www.postgresql.org/docs/release/18.4/).
+        database_version >= 18_00_04
+      end
+
       def supports_views?
         true
       end
@@ -282,9 +289,10 @@ module ActiveRecord
       def supports_insert_returning?
         true
       end
+      alias supports_update_returning? supports_insert_returning?
 
       def supports_insert_on_conflict?
-        database_version >= 9_05_00 # >= 9.5
+        true
       end
       alias supports_insert_on_duplicate_skip? supports_insert_on_conflict?
       alias supports_insert_on_duplicate_update? supports_insert_on_conflict?
@@ -295,7 +303,7 @@ module ActiveRecord
       end
 
       def supports_identity_columns? # :nodoc:
-        database_version >= 10_00_00 # >= 10.0
+        true
       end
 
       def supports_nulls_not_distinct?
@@ -303,7 +311,7 @@ module ActiveRecord
       end
 
       def supports_native_partitioning? # :nodoc:
-        database_version >= 10_00_00 # >= 10.0
+        true
       end
 
       if PG::Connection.method_defined?(:close_prepared) # pg 1.6.0 & libpq 17
@@ -474,8 +482,9 @@ module ActiveRecord
       end
 
       def supports_pgcrypto_uuid?
-        database_version >= 9_04_00 # >= 9.4
+        true
       end
+      deprecate :supports_pgcrypto_uuid?, deprecator: ActiveRecord.deprecator
 
       def supports_optimizer_hints?
         unless defined?(@has_pg_hint_plan)
@@ -646,10 +655,6 @@ module ActiveRecord
 
       # Rename enum value on an existing enum type.
       def rename_enum_value(type_name, **options)
-        unless database_version >= 10_00_00 # >= 10.0
-          raise ArgumentError, "Renaming enum values is only supported in PostgreSQL 10 or later"
-        end
-
         from = options.fetch(:from) { raise ArgumentError, ":from is required" }
         to = options.fetch(:to) { raise ArgumentError, ":to is required" }
 
@@ -709,8 +714,8 @@ module ActiveRecord
       end
 
       def check_version # :nodoc:
-        if database_version < 9_05_00 # < 9.5
-          raise "Your version of PostgreSQL (#{database_version}) is too old. Active Record supports PostgreSQL >= 9.5."
+        if database_version < 10_00_00 # < 10.0
+          raise "Your version of PostgreSQL (#{database_version}) is too old. Active Record supports PostgreSQL >= 10.0."
         end
       end
 

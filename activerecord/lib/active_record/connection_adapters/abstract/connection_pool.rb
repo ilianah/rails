@@ -455,13 +455,13 @@ module ActiveRecord
           begin
             yield lease.connection
           ensure
-            lease.sticky = sticky_was if prevent_permanent_checkout && !sticky_was
+            lease.sticky = sticky_was if prevent_permanent_checkout
           end
         else
           begin
             yield lease.connection = checkout
           ensure
-            lease.sticky = sticky_was if prevent_permanent_checkout && !sticky_was
+            lease.sticky = sticky_was if prevent_permanent_checkout
             release_connection(lease) unless lease.sticky
           end
         end
@@ -555,6 +555,7 @@ module ActiveRecord
         @reaper_lock.synchronize do
           synchronize do
             return if self.discarded?
+            Reaper.discard_pool(self)
             @connections.each do |conn|
               conn.discard!
             end

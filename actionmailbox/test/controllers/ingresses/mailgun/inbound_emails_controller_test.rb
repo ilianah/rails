@@ -2,10 +2,16 @@
 
 require "test_helper"
 
-ENV["MAILGUN_INGRESS_SIGNING_KEY"] = "tbsy84uSV1Kt3ZJZELY2TmShPRs91E3yL4tzf96297vBCkDWgL"
-
 class ActionMailbox::Ingresses::Mailgun::InboundEmailsControllerTest < ActionDispatch::IntegrationTest
-  setup { ActionMailbox.ingress = :mailgun }
+  setup do
+    @previous_key = ENV["MAILGUN_INGRESS_SIGNING_KEY"]
+    ENV["MAILGUN_INGRESS_SIGNING_KEY"] = "tbsy84uSV1Kt3ZJZELY2TmShPRs91E3yL4tzf96297vBCkDWgL"
+    ActionMailbox.ingress = :mailgun
+  end
+
+  teardown do
+    ENV["MAILGUN_INGRESS_SIGNING_KEY"] = @previous_key
+  end
 
   test "receiving an inbound email from Mailgun" do
     assert_difference -> { ActionMailbox::InboundEmail.count }, +1 do
@@ -69,6 +75,24 @@ class ActionMailbox::Ingresses::Mailgun::InboundEmailsControllerTest < ActionDis
         timestamp: 1539112500,
         token: "7VwW7k6Ak7zcTwoSoNm7aTtbk1g67MKAnsYLfUB7PdszbgR5Xi",
         signature: "ef24c5225322217bb065b80bb54eb4f9206d764e3e16abab07f0a64d1cf477cc",
+        "body-mime" => file_fixture("../files/welcome.eml").read
+      }
+    end
+
+    assert_response :unauthorized
+  end
+
+  test "rejecting an inbound email from Mailgun with a malformed timestamp" do
+    timestamp = "not-a-number"
+    token = "7VwW7k6Ak7zcTwoSoNm7aTtbk1g67MKAnsYLfUB7PdszbgR5Xi"
+    signature = OpenSSL::HMAC.hexdigest OpenSSL::Digest::SHA256.new, ENV["MAILGUN_INGRESS_SIGNING_KEY"], "#{timestamp}#{token}"
+
+    assert_no_difference -> { ActionMailbox::InboundEmail.count } do
+      travel_to "2018-10-09 15:15:00 EDT"
+      post rails_mailgun_inbound_emails_url, params: {
+        timestamp: timestamp,
+        token: token,
+        signature: signature,
         "body-mime" => file_fixture("../files/welcome.eml").read
       }
     end

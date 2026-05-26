@@ -694,10 +694,10 @@ Serving Files
 
 Active Storage supports two ways to serve files: redirecting and proxying.
 
-WARNING: All Active Storage controllers are publicly accessible by default. The
-generated URLs are hard to guess, but permanent by design. If your files
-require a higher level of protection consider implementing
-[Authenticated Controllers](#authenticated-controllers).
+WARNING: All Active Storage controllers are publicly accessible by default.
+Anyone who knows the URL can access the file, even if the rest of your
+application requires authentication. If your files require access control
+consider implementing [Authenticated Controllers](#authenticated-controllers).
 
 ### Redirect Mode
 
@@ -839,6 +839,16 @@ config.active_storage.draw_routes = false
 ```
 
 to prevent files being accessed with the publicly accessible URLs.
+
+If you only need to mount the Active Storage routes at a different path or with
+additional routing options, configure `config.active_storage.routes_prefix`
+instead. It accepts any value supported by `scope`, so you can pass a string path
+prefix or a hash of routing options:
+
+```ruby
+config.active_storage.routes_prefix = "/files"
+config.active_storage.routes_prefix = { path: "/files", subdomain: "assets" }
+```
 
 [`ActiveStorage::Blobs::RedirectController`]: https://api.rubyonrails.org/classes/ActiveStorage/Blobs/RedirectController.html
 [`ActiveStorage::Blobs::ProxyController`]: https://api.rubyonrails.org/classes/ActiveStorage/Blobs/ProxyController.html
