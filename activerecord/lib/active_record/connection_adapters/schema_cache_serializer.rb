@@ -6,9 +6,12 @@ module ActiveRecord
   module ConnectionAdapters
     class JSONSchemaCacheSerializer
       
+      @class_registry = {} # type to  class {"col" -> Column}
+      @type_registry = {} # class to type {Column -> "column"}
+
       loading_proc = ->(object) do
         if object.is_a?(Hash) && object.key?("_type")
-          klass = object["_type"].constantize
+          klass = class_for(object["_type"])
           instance = klass.allocate
           instance.init_from_schema_json(object)
           instance
@@ -18,20 +21,51 @@ module ActiveRecord
       end
 
       CODER = JSON::Coder.new(indent: '  ', space: ' ', object_nl: "\n", array_nl: "\n", on_load: loading_proc) do |object, is_key|
-        object.as_schema_json
+        data = object.as_schema_json
+        data.compact!
+        data["_type"] = type_for(object.class)
+        data
       end
 
       class << self
-        def dump(cache)
-          CODER.dump(cache.as_schema_json)
+        def register(type, klass)
+          @class_registry[type] = klass
+          @type_registry[klass] = type
         end
 
-        def load(data)
-          CODER.load(data)
-        end 
+        def class_for(type)
+          @class_registry.fetch(type) 
+        end
+
+        def type_for(klass)
+          @type_registry.fetch(klass)  
+        end
+
+          def dump(cache)
+            CODER.dump(cache)  
+          end
+
+          def load(data)
+            CODER.load(data)
+          end 
       end
+
     end
+    
+
+    JSONSchemaCacheSerializer.register "text", Type::Text
+    JSONSchemaCacheSerializer.register "datetime", Type::DateTime
+    JSONSchemaCacheSerializer.register "boolean", ActiveModel::Type::Boolean
+    JSONSchemaCacheSerializer.register "json", Type::Json
+    JSONSchemaCacheSerializer.register "float", ActiveModel::Type::Float
+    JSONSchemaCacheSerializer.register "decimal", ActiveModel::Type::Decimal
+    JSONSchemaCacheSerializer.register "date", Type::Date
+    JSONSchemaCacheSerializer.register "integer", ActiveModel::Type::Integer
+
+    JSONSchemaCacheSerializer.register "sql_type_metadata", SqlTypeMetadata
+    JSONSchemaCacheSerializer.register "string", ActiveModel::Type::String
+    JSONSchemaCacheSerializer.register "index", IndexDefinition
+    JSONSchemaCacheSerializer.register "schema_cache", ActiveRecord::ConnectionAdapters::SchemaCache
+
   end
 end
-
-

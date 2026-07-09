@@ -485,6 +485,12 @@ module ActiveRecord
     class JsonFormatTest < ActiveRecord::TestCase
       include DumpAndLoadTests
 
+
+      # test "cast_type_test"  do
+      #   puts JSONSchemaCacheSerializer.dump(ActiveModel::Type::Integer.new)
+      # end
+
+
       private
         def format_extension
           ".json"

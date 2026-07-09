@@ -60,6 +60,19 @@ module ActiveModel
         value
       end
 
+      def as_schema_json
+        {
+          precision: precision, scale: scale, limit: limit, true: @true, false: @false
+        }
+      end
+
+
+      def init_from_schema_json(coder)
+       super
+       @true = coder["true"]
+       @false = coder["false"]
+      end
+
       private
         def cast_value(value)
           case value

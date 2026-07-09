@@ -12,7 +12,16 @@ module ActiveRecord
 
         def initialize(type_metadata, extra: nil)
           super(type_metadata)
-          @extra = extra
+          @extra = extra.presence
+        end
+
+        def as_schema_json
+          { "type_metadata" => __getobj__, "extra" => extra }
+        end
+
+        def init_from_schema_json(coder)
+          __setobj__(coder["type_metadata"])
+          @extra = coder["extra"]
         end
 
         def ==(other)
@@ -36,6 +45,9 @@ module ActiveRecord
             @extra = -extra if extra
             super
           end
+
+      JSONSchemaCacheSerializer.register "mysql_type_metadata", self
+
       end
     end
   end

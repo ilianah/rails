@@ -38,20 +38,18 @@ module ActiveRecord
       end
 
       def as_schema_json
-        data = {}
-        data["_type"] = self.class.name
-        self.instance_variables.each do |name|
-          data[name] = instance_variable_get(name)
-        end 
-        data
+        
+        { sql_type: sql_type, type: type, limit: limit, precision: precision, scale: scale}
+        
       end
 
       
       def init_from_schema_json(coder)
-        coder.each do |key, value|
-          next if key == "_type"
-          self.instance_variable_set(key, value)
-        end
+        @sql_type = coder["sql_type"]
+        @type = coder["type"]
+        @limit = coder["limit"]
+        @precision = coder["precision"]
+        @scale = coder["scale"]
       end
 
       private

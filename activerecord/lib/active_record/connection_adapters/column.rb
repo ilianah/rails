@@ -68,7 +68,6 @@ module ActiveRecord
 
       def as_schema_json
         data = {} 
-        data["_type"] = self.class.name
         encode_with(data)
         data
       end

@@ -22,6 +22,10 @@ module ActiveRecord
         def virtual?
           /\b(?:VIRTUAL|STORED|PERSISTENT)\b/.match?(extra)
         end
+
+
+        JSONSchemaCacheSerializer.register "mysql_index", self
+
       end
     end
   end

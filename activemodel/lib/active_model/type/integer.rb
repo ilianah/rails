@@ -100,6 +100,18 @@ module ActiveModel
         false
       end
 
+      def as_schema_json
+        {
+          precision: precision, scale: scale, limit: limit, min: @min, max: @max
+        }
+      end
+
+      def init_from_schema_json(coder)
+       super
+       @min = coder["min"]
+       @max = coder["max"]
+      end
+
       private
         def out_of_range?(value)
           if @max.nil?

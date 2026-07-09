@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "active_support/core_ext/file/atomic"
-require "active_record/connection_adapters/schema_cache_serializer"
 
 module ActiveRecord
   module ConnectionAdapters
@@ -292,12 +291,16 @@ module ActiveRecord
 
       def as_schema_json
         data = {}
-        data["_type"] = self.class.name
         encode_with(data)
+        data["data_sources"] = data["data_sources"].keys
+
         data
       end
 
-      alias_method :init_from_schema_json, :init_with
+      def init_from_schema_json(coder)
+        coder["data_sources"] = coder["data_sources"].to_h { |table_name| [table_name, true] }
+        init_with(coder)
+      end
 
       def cached?(table_name)
         @columns.key?(table_name)

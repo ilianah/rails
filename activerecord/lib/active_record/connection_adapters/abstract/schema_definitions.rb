@@ -63,20 +63,40 @@ module ActiveRecord
 
 
       def as_schema_json
-        data = {}
-        data["_type"] = self.class.name
-        self.instance_variables.each do |name|
-          data[name] = instance_variable_get(name)
-        end 
-        data
+        {  
+        table: @table,
+        name: @name,
+        unique: @unique || nil,
+        columns: @columns,
+        lengths: @lengths.presence,
+        orders: @orders.presence,
+        opclasses: @opclasses.presence,
+        where: @where,
+        type: @type,
+        using: @using,
+        include: @include,
+        nulls_not_distinct: @nulls_not_distinct,
+        comment: @comment,
+        invalid: !@valid || nil
+      }
       end
 
       
       def init_from_schema_json(coder)
-        coder.each do |key, value|
-          next if key == "_type"
-          self.instance_variable_set(key, value)
-        end
+        @table = coder["table"],
+        @name = coder["name"],
+        @unique = coder["unique"] || false,
+        @columns = coder["columns"],
+        @lengths = coder["lengths"] || {},
+        @orders = coder["orders"] || {},
+        @opclasses = coder["opclasses"] || {},
+        @where = coder["where"],
+        @type = coder["type"],
+        @using = coder["using"],
+        @include = coder["include"],
+        @nulls_not_distinct = coder["nulls_not_distinct"],
+        @comment = coder["comment"],
+        @valid = !coder["invalid"]
       end
 
       private

@@ -36,6 +36,12 @@ module ActiveModel
         value
       end
 
+      def as_schema_json
+        {
+          precision: precision, scale: scale, limit: limit
+        }
+      end
+
       private
         def cast_value(value)
           if value == ""

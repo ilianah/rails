@@ -187,19 +187,15 @@ module ActiveModel
       end
 
       def as_schema_json
-        data = {}
-        data["_type"] = self.class.name
-        self.instance_variables.each do |name|
-          data[name] = instance_variable_get(name)
-        end 
-        data
+        {
+          precision: precision, scale: scale, limit: limit
+        }
       end
 
       def init_from_schema_json(coder)
-        coder.each do |key, value|
-          next if key == "_type"
-          self.instance_variable_set(key, value)
-        end
+        @precision = coder["precision"]
+        @scale = coder["scale"]
+        @limit = coder["limit"]
       end
 
       private

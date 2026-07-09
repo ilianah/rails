@@ -513,6 +513,8 @@ module ActiveRecord
             # See https://www.sqlite.org/datatype3.html#storage_classes_and_datatypes
             limit || 8
           end
+
+        JSONSchemaCacheSerializer.register "sqlite3_integer", self
       end
 
       ActiveRecord::Type.register(:integer, SQLite3Integer, adapter: :sqlite3)

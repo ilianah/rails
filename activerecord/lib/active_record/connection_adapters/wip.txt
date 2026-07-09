@@ -1,0 +1,16 @@
+schema_cache:dump serializes all schema, so the file is read 
+different than schema:dump
+
+schema:dump generates sql file, used to rebuild a db from scratch
+schema_cache:dump: yml file, skip querying the db for metadata on boot 
+serialisation goes through yaml object hooks and we go thorugh yaml.dump or mashal.dump for dump files
+
+
+json:
+- load and dump serialise, we need serialiser per type because we can't automatically reconstruct the object 
+we can either
+-each object defines as_json
+-centralized serializer
+but all column metadata should be preserved 
+
+
