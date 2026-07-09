@@ -66,6 +66,15 @@ module ActiveRecord
         coder["comment"] = @comment
       end
 
+      def as_schema_json
+        data = {} 
+        data["_type"] = self.class.name
+        encode_with(data)
+        data
+      end
+
+      alias_method :init_from_schema_json, :init_with
+
       # whether the column is auto-populated by the database using a sequence
       def auto_incremented_by_db?
         false

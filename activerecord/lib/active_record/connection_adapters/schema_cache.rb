@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "active_support/core_ext/file/atomic"
+require "active_record/connection_adapters/schema_cache_serializer"
 
 module ActiveRecord
   module ConnectionAdapters
@@ -231,6 +232,8 @@ module ActiveRecord
         read(filename) do |file|
           if filename.include?(".dump")
             Marshal.load(file)
+          elsif filename.include?(".json")
+            JSONSchemaCacheSerializer.load(file)
           else
             YAML.unsafe_load(file)
           end
@@ -286,6 +289,15 @@ module ActiveRecord
           derive_columns_hash_and_deduplicate_values
         end
       end
+
+      def as_schema_json
+        data = {}
+        data["_type"] = self.class.name
+        encode_with(data)
+        data
+      end
+
+      alias_method :init_from_schema_json, :init_with
 
       def cached?(table_name)
         @columns.key?(table_name)
@@ -403,6 +415,8 @@ module ActiveRecord
         open(filename) { |f|
           if filename.include?(".dump")
             f.write(Marshal.dump(self))
+          elsif filename.include?(".json")
+            f.write(JSONSchemaCacheSerializer.dump(self))
           else
             f.write(YAML.dump(self))
           end

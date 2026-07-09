@@ -61,6 +61,24 @@ module ActiveRecord
           (nulls_not_distinct.nil? || self.nulls_not_distinct == nulls_not_distinct)
       end
 
+
+      def as_schema_json
+        data = {}
+        data["_type"] = self.class.name
+        self.instance_variables.each do |name|
+          data[name] = instance_variable_get(name)
+        end 
+        data
+      end
+
+      
+      def init_from_schema_json(coder)
+        coder.each do |key, value|
+          next if key == "_type"
+          self.instance_variable_set(key, value)
+        end
+      end
+
       private
         def concise_options(options)
           if columns.size == options.size && options.values.uniq.size == 1
