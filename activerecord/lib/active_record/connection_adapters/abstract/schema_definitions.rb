@@ -63,7 +63,7 @@ module ActiveRecord
 
 
       def as_schema_json
-        {  
+        {
         table: @table,
         name: @name,
         unique: @unique || nil,
@@ -81,21 +81,21 @@ module ActiveRecord
       }
       end
 
-      
+
       def init_from_schema_json(coder)
-        @table = coder["table"],
-        @name = coder["name"],
-        @unique = coder["unique"] || false,
-        @columns = coder["columns"],
-        @lengths = coder["lengths"] || {},
-        @orders = coder["orders"] || {},
-        @opclasses = coder["opclasses"] || {},
-        @where = coder["where"],
-        @type = coder["type"],
-        @using = coder["using"],
-        @include = coder["include"],
-        @nulls_not_distinct = coder["nulls_not_distinct"],
-        @comment = coder["comment"],
+        @table = coder["table"]
+        @name = coder["name"]
+        @unique = coder["unique"] || false
+        @columns = coder["columns"]
+        @lengths = coder["lengths"] || {}
+        @orders = coder["orders"] || {}
+        @opclasses = coder["opclasses"] || {}
+        @where = coder["where"]
+        @type = coder["type"]
+        @using = coder["using"]
+        @include = coder["include"]
+        @nulls_not_distinct = coder["nulls_not_distinct"]
+        @comment = coder["comment"]
         @valid = !coder["invalid"]
       end
 

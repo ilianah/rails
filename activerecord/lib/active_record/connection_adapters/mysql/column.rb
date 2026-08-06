@@ -24,8 +24,7 @@ module ActiveRecord
         end
 
 
-        JSONSchemaCacheSerializer.register "mysql_index", self
-
+        JSONSchemaCacheSerializer.register "mysql_column", self
       end
     end
   end

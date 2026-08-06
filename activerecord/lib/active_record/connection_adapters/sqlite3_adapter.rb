@@ -514,7 +514,7 @@ module ActiveRecord
             limit || 8
           end
 
-        JSONSchemaCacheSerializer.register "sqlite3_integer", self
+          JSONSchemaCacheSerializer.register "sqlite3_integer", self
       end
 
       ActiveRecord::Type.register(:integer, SQLite3Integer, adapter: :sqlite3)

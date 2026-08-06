@@ -38,12 +38,10 @@ module ActiveRecord
       end
 
       def as_schema_json
-        
-        { sql_type: sql_type, type: type, limit: limit, precision: precision, scale: scale}
-        
+        { sql_type: sql_type, type: type, limit: limit, precision: precision, scale: scale }
       end
 
-      
+
       def init_from_schema_json(coder)
         @sql_type = coder["sql_type"]
         @type = coder["type"]

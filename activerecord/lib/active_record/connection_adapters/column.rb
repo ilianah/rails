@@ -67,12 +67,14 @@ module ActiveRecord
       end
 
       def as_schema_json
-        data = {} 
+        data = {}
         encode_with(data)
         data
       end
 
-      alias_method :init_from_schema_json, :init_with
+      def init_from_schema_json(coder)
+        init_with(coder)
+      end
 
       # whether the column is auto-populated by the database using a sequence
       def auto_incremented_by_db?

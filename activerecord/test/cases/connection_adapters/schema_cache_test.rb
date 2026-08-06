@@ -485,10 +485,9 @@ module ActiveRecord
     class JsonFormatTest < ActiveRecord::TestCase
       include DumpAndLoadTests
 
-
-      # test "cast_type_test"  do
-      #   puts JSONSchemaCacheSerializer.dump(ActiveModel::Type::Integer.new)
-      # end
+      test "test" do
+        loaded = load(JSONSchemaCacheSerializer.dump(Column.new("price", ActiveModel::Type::Decimal.new, BigDecimal("1.5"))))
+      end
 
 
       private

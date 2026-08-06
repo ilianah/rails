@@ -11,6 +11,17 @@ module ActiveRecord
             @type = type
             super(**options)
           end
+
+          def as_schema_json
+            json = super
+            json[:type] = @type
+            json
+          end
+
+          def init_from_schema_json(coder)
+            super
+            @type = coder["type"]
+          end
         end
       end
     end

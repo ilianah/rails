@@ -34,6 +34,31 @@ module ActiveRecord
     module PostgreSQL
       module OID # :nodoc:
       end
+
+      JSONSchemaCacheSerializer.register "postgresql_array", OID::Array
+      JSONSchemaCacheSerializer.register "postgresql_bit", OID::Bit
+      JSONSchemaCacheSerializer.register "postgresql_bit_varying", OID::BitVarying
+      JSONSchemaCacheSerializer.register "postgresql_bytea", OID::Bytea
+      JSONSchemaCacheSerializer.register "postgresql_cidr", OID::Cidr
+      JSONSchemaCacheSerializer.register "postgresql_date", OID::Date
+      JSONSchemaCacheSerializer.register "postgresql_date_time", OID::DateTime
+      JSONSchemaCacheSerializer.register "postgresql_decimal", OID::Decimal
+      JSONSchemaCacheSerializer.register "postgresql_enum", OID::Enum
+      JSONSchemaCacheSerializer.register "postgresql_hstore", OID::Hstore
+      JSONSchemaCacheSerializer.register "postgresql_inet", OID::Inet
+      JSONSchemaCacheSerializer.register "postgresql_interval", OID::Interval
+      JSONSchemaCacheSerializer.register "postgresql_jsonb", OID::Jsonb
+      JSONSchemaCacheSerializer.register "postgresql_legacy_point", OID::LegacyPoint
+      JSONSchemaCacheSerializer.register "postgresql_macaddr", OID::Macaddr
+      JSONSchemaCacheSerializer.register "postgresql_money", OID::Money
+      JSONSchemaCacheSerializer.register "postgresql_point", OID::Point
+      JSONSchemaCacheSerializer.register "postgresql_range", OID::Range
+      JSONSchemaCacheSerializer.register "postgresql_specialized_string", OID::SpecializedString
+      JSONSchemaCacheSerializer.register "postgresql_timestamp", OID::Timestamp
+      JSONSchemaCacheSerializer.register "postgresql_timestamp_with_time_zone", OID::TimestampWithTimeZone
+      JSONSchemaCacheSerializer.register "postgresql_uuid", OID::Uuid
+      JSONSchemaCacheSerializer.register "postgresql_vector", OID::Vector
+      JSONSchemaCacheSerializer.register "postgresql_xml", OID::Xml
     end
   end
 end

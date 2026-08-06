@@ -298,7 +298,7 @@ module ActiveRecord
       end
 
       def init_from_schema_json(coder)
-        coder["data_sources"] = coder["data_sources"].to_h { |table_name| [table_name, true] }
+        coder["data_sources"] = coder["data_sources"].index_with { |table_name| true }
         init_with(coder)
       end
 

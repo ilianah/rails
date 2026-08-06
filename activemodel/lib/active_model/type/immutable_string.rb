@@ -68,9 +68,9 @@ module ActiveModel
 
 
       def init_from_schema_json(coder)
-       super
-       @true = coder["true"]
-       @false = coder["false"]
+        super
+        @true = coder["true"]
+        @false = coder["false"]
       end
 
       private

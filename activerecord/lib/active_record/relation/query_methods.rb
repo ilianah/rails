@@ -1731,10 +1731,15 @@ module ActiveRecord
       end
 
       def arel_columns(columns) # :nodoc:
+        from = from_clause_source if $memoize_from
         columns.flat_map do |field|
           case field
           when Symbol, String
-            arel_column(field)
+            if $memoize_from
+              arel_column_memo(field, from)
+            else
+              arel_column(field)
+            end
           when Proc
             field.call
           when Hash
