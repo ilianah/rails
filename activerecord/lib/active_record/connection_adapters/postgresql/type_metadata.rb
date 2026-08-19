@@ -50,7 +50,6 @@ module ActiveRecord
             super
           end
 
-          JSONSchemaCacheSerializer.register "postgresql_type_metadata", self
       end
     end
     PostgreSQLTypeMetadata = PostgreSQL::TypeMetadata

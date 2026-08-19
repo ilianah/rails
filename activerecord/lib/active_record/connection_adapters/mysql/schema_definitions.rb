@@ -76,7 +76,6 @@ module ActiveRecord
           @enabled = !coder["disabled"]
         end
 
-        JSONSchemaCacheSerializer.register "mysql_index_definition", self
       end
 
       # = Active Record MySQL Adapter \Table Definition

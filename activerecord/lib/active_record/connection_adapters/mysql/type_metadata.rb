@@ -46,7 +46,6 @@ module ActiveRecord
             super
           end
 
-          JSONSchemaCacheSerializer.register "mysql_type_metadata", self
       end
     end
   end

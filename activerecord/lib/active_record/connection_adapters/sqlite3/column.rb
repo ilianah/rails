@@ -65,7 +65,6 @@ module ActiveRecord
         protected
           attr_reader :generated_type
 
-          JSONSchemaCacheSerializer.register "sqlite3_column", self
       end
     end
   end

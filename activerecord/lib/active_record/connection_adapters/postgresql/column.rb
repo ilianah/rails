@@ -87,7 +87,6 @@ module ActiveRecord
         protected
           attr_reader :generated
 
-          JSONSchemaCacheSerializer.register "postgresql_column", self
       end
     end
     PostgreSQLColumn = PostgreSQL::Column # :nodoc:
