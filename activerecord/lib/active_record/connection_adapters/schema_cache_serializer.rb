@@ -83,7 +83,9 @@ module ActiveRecord
         end
       end
 
-      CODER = JSON::Coder.new(indent: "  ", space: " ", object_nl: "\n", array_nl: "\n", on_load: loading_proc) do |object, is_key|
+
+
+      CODER = JSON::Coder.new(on_load: loading_proc) do |object, is_key|
         if object.respond_to?(:as_schema_json)
           data = object.as_schema_json
           data.compact!
@@ -115,7 +117,35 @@ module ActiveRecord
         end
 
         def dump(cache)
-          CODER.dump(cache)
+          objects = {}.compare_by_identity
+          references = []
+          count = -1
+          coder = JSON::Coder.new(indent: "  ", space: " ", object_nl: "\n", array_nl: "\n") do |object, is_key|
+            if object.respond_to?(:as_schema_json)
+              unless object_id = objects[object]  
+                object_id = objects[object] = (count += 1)
+                data = object.as_schema_json
+                data.compact!
+                data["_type"] = type_for(object.class)
+                references[object_id] = coder.dump(data)
+              end
+
+              object_id
+            else
+              case object
+              when BigDecimal then { "_type" => "big_decimal", "value" => object.to_s("F") }
+              when ::Date then { "_type" => "date_value", "value" => object.iso8601 }
+              when ::Time then { "_type" => "time_value", "value" => object.iso8601(9) }
+              else
+                raise ArgumentError, "Cannot serialize #{object.class} to JSON schema cache"
+              end
+            end
+          end
+          result = coder.dump(cache)
+          schema = JSON.dump({schema: JSON::Fragment.new(result), references: references.map { |d| JSON::Fragment.new(d) } })
+
+          puts schema
+          schema
         end
 
         def load(data)
