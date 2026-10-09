@@ -240,6 +240,6 @@ class String
   # `raw` helper in views. It is recommended that you use `sanitize` instead of
   # this method. It should never be called on user input.
   def html_safe
-    ActiveSupport::SafeBuffer.new(self)
+    ActiveSupport.safe_buffer_class.new(self)
   end
 end
