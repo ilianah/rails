@@ -110,7 +110,7 @@ module ActionView
             # We want to cache buffers as raw strings. This both improve performance and
             # avoid creating forward compatibility issues with the internal representation
             # of these two types.
-            if body.is_a?(ActionView::OutputBuffer) || body.is_a?(ActiveSupport::SafeBuffer)
+            if body.is_a?(ActionView::OutputBuffer) || body.is_a?(ActiveSupport::SafeBuffer) || body.is_a?(ActiveSupport::HTMLSafeString)
               body = body.to_str
             end
 

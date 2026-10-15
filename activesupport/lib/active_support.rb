@@ -151,11 +151,8 @@ module ActiveSupport
     @to_time_preserves_timezone = value
   end
 
-  singleton_class.attr_writer :safe_buffer_class
-
-  def self.safe_buffer_class
-    @safe_buffer_class ||= ActiveSupport::SafeBuffer
-  end
+  singleton_class.attr_accessor :safe_buffer_class
+  @safe_buffer_class = ActiveSupport::HTMLSafeString
 
   # Change the output of `ActiveSupport::TimeZone.utc_to_local`.
   #
