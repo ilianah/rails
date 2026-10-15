@@ -13,33 +13,70 @@ class HTMLSafeStringTest < ActiveSupport::TestCase
 		assert_predicate @str, :html_safe?
 	end
 
+	test "review all" do 
+		pending = ActiveSupport::HTMLSafeString.public_instance_methods - REVIEWED
+		assert_empty pending
+	end
 
 	MUTATION_METHODS = Set[
 		:upcase!,
-		:capitalize!
+		:capitalize!,
+		:append_as_bytes,
+		:bitwise_not!,
+		:chomp!,
+		:chop!,
+		:clear,
+		:concat,
+		:downcase!,
+		:encode!,
+		:gsub!,
+		:lstrip!,
+		:next!,
+		:prepend,
+		:reverse!,
+		:rstrip!,
+		:squeeze!,
+		:squish!,
+		:strip!,
+		:succ!,
+		:swapcase!,
+		:unicode_normalize!
 	]
 
 	SAFE_METHODS = [
 		:dedup,
 		:freeze,
-		:'@-',
+		:-@
 	]
 
 	METHOD_ARGUMENTS = {
 		:+ => [["hello"], {}, nil]
 	}
 
-	(ActiveSupport::HTMLSafeString.public_instance_methods - SAFE_METHODS).each do |method|
-		test "##{method} is handled safely" do
+	NEW_OBJECT_METHODS = [
+		:upcase,
+		:capitalize
+	]
+
+	OTHER = [
+	]
+
+	REVIEWED = SAFE_METHODS + MUTATION_METHODS.to_a + NEW_OBJECT_METHODS + OTHER
+
+	MUTATION_METHODS.each do |method|
+		test "##{method} raises FrozenError" do
 			args, kwargs, block = METHOD_ARGUMENTS[method]
-			if MUTATION_METHODS.include?(method)
-				assert_raises(FrozenError) do				
-					result = @str.public_send(method, *args, **kwargs, &block)
-				end
-			else 
-				result = @str.public_send(method, *args, **kwargs, &block)
-				refute_predicate result, :html_safe?
+			assert_raises(FrozenError) do
+				@str.public_send(method, *args, **kwargs, &block)
 			end
+		end
+	end
+
+	NEW_OBJECT_METHODS.each do |method|
+		test "##{method} does not return an html safe result" do
+			args, kwargs, block = METHOD_ARGUMENTS[method]
+			result = @str.public_send(method, *args, **kwargs, &block)
+			refute_predicate result, :html_safe?
 		end
 	end
 
