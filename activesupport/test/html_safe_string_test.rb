@@ -18,6 +18,18 @@ class HTMLSafeStringTest < ActiveSupport::TestCase
 		assert_empty pending
 	end
 
+	test "html escape"  do
+		assert_equal "<html>", ERB::Util.unwrapped_html_escape(ActiveSupport::HTMLSafeString.new("<html>"))
+	end
+
+	test "html escape old" do
+		assert_equal "<html>", ERB::Util.unwrapped_html_escape(ActiveSupport::SafeBuffer.new("<html>"))
+	end
+
+	test "to str" do
+		assert_equal String, @str.to_str.class
+	end
+
 	MUTATION_METHODS = Set[
 		:upcase!,
 		:capitalize!,

@@ -383,7 +383,7 @@ module ActionView
         authenticity_token = html_options.delete("authenticity_token")
 
         method     = (html_options.delete("method").presence || method_for_options(options)).to_s
-        method_tag = BUTTON_TAG_METHOD_VERBS.include?(method) ? method_tag(method) : "".html_safe
+        method_tag = BUTTON_TAG_METHOD_VERBS.include?(method) ? method_tag(method).to_str : +""
 
         form_method  = method == "get" ? "get" : "post"
         form_options = html_options.delete("form") || {}
@@ -411,15 +411,15 @@ module ActionView
           tag("input", html_options)
         end
 
-        inner_tags = method_tag.safe_concat(button).safe_concat(request_token_tag)
+        inner_tags = method_tag << ERB::Util.html_escape(button) << ERB::Util.html_escape(request_token_tag)
         if params
           to_form_params(params).each do |param|
             options = { type: "hidden", name: param[:name], value: param[:value] }
             options[:autocomplete] = "off" unless ActionView::Base.remove_hidden_field_autocomplete
-            inner_tags.safe_concat tag(:input, **options)
+            inner_tags << ERB::Util.html_escape(tag(:input, **options))
           end
         end
-        html = content_tag("form", inner_tags, form_options)
+        html = content_tag("form", inner_tags.html_safe, form_options)
         prevent_content_exfiltration(html)
       end
 

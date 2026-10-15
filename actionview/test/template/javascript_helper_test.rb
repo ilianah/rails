@@ -50,9 +50,9 @@ class JavaScriptHelperTest < ActionView::TestCase
     given = %('quoted' "double-quoted" new-line:\n </closed>)
     expect = %(\\'quoted\\' \\"double-quoted\\" new-line:\\n <\\/closed>)
     assert_equal expect, escape_javascript(given)
-    assert_equal expect, escape_javascript(ActiveSupport::SafeBuffer.new(given))
+    assert_equal expect, escape_javascript(given.html_safe)
     assert_instance_of String, escape_javascript(given)
-    assert_instance_of ActiveSupport::SafeBuffer, escape_javascript(ActiveSupport::SafeBuffer.new(given))
+    assert_instance_of ActiveSupport.safe_buffer_class, escape_javascript(given.html_safe)
   end
 
   def test_javascript_tag

@@ -212,12 +212,12 @@ module ActionView
           end
 
           if include_blank
-            option_tags = content_tag("option", include_blank, options_for_blank_options_tag).safe_concat(option_tags)
+            option_tags = content_tag("option", include_blank, options_for_blank_options_tag) + option_tags
           end
         end
 
         if prompt = options.delete(:prompt)
-          option_tags = content_tag("option", prompt, value: "").safe_concat(option_tags)
+          option_tags = content_tag("option", prompt, value: "") + option_tags
         end
 
         content_tag "select", option_tags, { "name" => html_name, "id" => sanitize_to_id(name) }.update(options.stringify_keys)

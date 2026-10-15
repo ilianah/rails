@@ -553,10 +553,10 @@ module ActionView
         prompt  = options[:prompt]
         divider = options[:divider]
 
-        body = "".html_safe
+        body = +""
 
         if prompt
-          body.safe_concat content_tag("option", prompt_text(prompt), value: "")
+          body << ERB::Util.html_escape(content_tag("option", prompt_text(prompt), value: ""))
         end
 
         grouped_options.each do |container|
@@ -569,10 +569,10 @@ module ActionView
           end
 
           html_attributes = { label: label }.merge!(html_attributes)
-          body.safe_concat content_tag("optgroup", options_for_select(container, selected_key), html_attributes)
+          body << ERB::Util.html_escape(content_tag("optgroup", options_for_select(container, selected_key), html_attributes))
         end
 
-        body
+        body.html_safe
       end
 
       # Returns a string of option tags for pretty much any time zone in the
@@ -595,7 +595,7 @@ module ActionView
       # NOTE: Only the option tags are returned, you have to wrap this call in
       # a regular HTML select tag.
       def time_zone_options_for_select(selected = nil, priority_zones = nil, model = ::ActiveSupport::TimeZone)
-        zone_options = "".html_safe
+        zone_options = +""
 
         zones = model.all
         convert_zones = lambda { |list| list.map { |z| [ z.to_s, z.name ] } }
@@ -605,14 +605,15 @@ module ActionView
             priority_zones = zones.select { |z| z.match?(priority_zones) }
           end
 
-          zone_options.safe_concat options_for_select(convert_zones[priority_zones], selected)
-          zone_options.safe_concat content_tag("option", "-------------", value: "", disabled: true)
-          zone_options.safe_concat "\n"
+          zone_options << ERB::Util.html_escape(options_for_select(convert_zones[priority_zones], selected))
+          zone_options << ERB::Util.html_escape(content_tag("option", "-------------", value: "", disabled: true))
+          zone_options << "\n"
 
           zones = zones - priority_zones
         end
 
-        zone_options.safe_concat options_for_select(convert_zones[zones], selected)
+        zone_options << ERB::Util.html_escape(options_for_select(convert_zones[zones], selected))
+        zone_options.html_safe
       end
 
       # Returns a string of option tags for the days of the week.
