@@ -138,8 +138,7 @@ class FragmentCachingTest < ActionController::TestCase
 
     view_context = @controller.view_context
 
-    buffer = "generated till now -> ".html_safe
-    buffer << view_context.send(:fragment_for, "expensive") { fragment_computed = true }
+    buffer = "generated till now -> ".html_safe + view_context.send(:fragment_for, "expensive") { fragment_computed = true }
 
     assert_not fragment_computed
     assert_equal "generated till now -> fragment content", buffer
