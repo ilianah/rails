@@ -25,6 +25,7 @@ module MessagePackSharedSerializerTests
         16  => Regexp,
         17  => ActiveSupport::HashWithIndifferentAccess,
         18  => ActiveSupport::SafeBuffer,
+        19  => ActiveSupport::HTMLSafeString,
         127 => Object,
       }
 
@@ -166,19 +167,28 @@ module MessagePackSharedSerializerTests
     end
 
     test "roundtrips ActiveSupport::SafeBuffer preserving html_safe?" do
-      deserialized = load(dump(["other", "Mäßig".html_safe, "other"]))[1]
+      deserialized = load(dump(["other", ActiveSupport::SafeBuffer.new("Mäßig"), "other"]))[1]
 
       assert_instance_of ActiveSupport::SafeBuffer, deserialized
       assert_predicate deserialized, :html_safe?
       assert_equal Encoding::UTF_8, deserialized.encoding
       assert_equal "prefix Mäßig", "prefix " + deserialized
 
-      str = "Mäßig".html_safe
+      str = ActiveSupport::SafeBuffer.new("Mäßig")
       str.sub!(/Z/, "Z") # Mark unsafe
       deserialized = load(dump(["other", str, "other"]))[1]
 
       assert_instance_of String, deserialized
       assert_not_predicate deserialized, :html_safe?
+      assert_equal Encoding::UTF_8, deserialized.encoding
+      assert_equal "prefix Mäßig", "prefix " + deserialized
+    end
+
+    test "roundtrips ActiveSupport::HTMLSafeString preserving encoding" do
+      deserialized = load(dump(ActiveSupport::HTMLSafeString.new("Mäßig")))
+
+      assert_instance_of ActiveSupport::HTMLSafeString, deserialized
+      assert_predicate deserialized, :html_safe?
       assert_equal Encoding::UTF_8, deserialized.encoding
       assert_equal "prefix Mäßig", "prefix " + deserialized
     end

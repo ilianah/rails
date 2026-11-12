@@ -53,6 +53,7 @@ module ActiveSupport
   autoload :FileUpdateChecker
   autoload :EventedFileUpdateChecker
   autoload :ForkTracker
+  autoload :HTMLSafeString
   autoload :LogSubscriber
   autoload :StructuredEventSubscriber
   autoload :IsolatedExecutionState
@@ -148,6 +149,9 @@ module ActiveSupport
 
     @to_time_preserves_timezone = value
   end
+
+  singleton_class.attr_accessor :safe_buffer_class
+  @safe_buffer_class = ActiveSupport::HTMLSafeString
 
   # Change the output of `ActiveSupport::TimeZone.utc_to_local`.
   #

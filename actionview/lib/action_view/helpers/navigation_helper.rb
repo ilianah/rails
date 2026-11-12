@@ -456,7 +456,7 @@ module ActionView
         inner_tags = button
         if params
           to_form_params(params).each do |param|
-            inner_tags.safe_concat hidden_field_tag(param[:name], param[:value], id: nil)
+            inner_tags += hidden_field_tag(param[:name], param[:value], id: nil)
           end
         end
         form_tag(url || false, form_options) { inner_tags }

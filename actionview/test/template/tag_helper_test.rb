@@ -337,12 +337,13 @@ class TagHelperTest < ActionView::TestCase
       html = build.call
       original = String.new(html)
 
-      assert_not_predicate html, :frozen?
-      html << "<b>"
-      html.safe_concat("<i>")
-
-      assert_equal original + "&lt;b&gt;<i>", html
+      assert_predicate html, :frozen?
       assert_predicate html, :html_safe?
+      assert_raises(FrozenError) { html << "<b>" }
+
+      combined = html + "<b>"
+      assert_equal original + "&lt;b&gt;", combined
+      assert_predicate combined, :html_safe?
       assert_equal original, build.call
     end
   end

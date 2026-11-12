@@ -109,6 +109,11 @@ module ActiveSupport
           packer: method(:write_safe_buffer),
           unpacker: method(:read_safe_buffer),
           recursive: true
+
+        registry.register_type 19, ActiveSupport::HTMLSafeString,
+          packer: method(:write_html_safe_string),
+          unpacker: method(:read_html_safe_string),
+          recursive: true
       end
 
       def install_unregistered_type_error(registry)
@@ -263,6 +268,14 @@ module ActiveSupport
         else
           unpacker.read
         end
+      end
+
+      def write_html_safe_string(string, packer)
+        packer.write(string.to_str)
+      end
+
+      def read_html_safe_string(unpacker)
+        ActiveSupport::HTMLSafeString.new(unpacker.read)
       end
 
       def raise_unserializable(object, *)
